@@ -1,17 +1,12 @@
 from flask import Flask, request, jsonify
 import requests
 from bs4 import BeautifulSoup
-from urllib.parse import urljoin, urlparse
 
 app = Flask(__name__)
 
-PREFIX = ""
+CAPITALIQ_PREFIX = "https://www.capitaliq.spglobal.com/Articles/"
 
-def is_valid(url: str) -> bool:
-    p = urlparse(url)
-    return p.scheme and p.netloc
-
-def fetch_image_links(page_url: str) -> list[str]:
+def fetch_capitaliq_images(page_url: str) -> list[str]:
     try:
         headers = {
             "User-Agent": (
@@ -22,7 +17,8 @@ def fetch_image_links(page_url: str) -> list[str]:
         }
         resp = requests.get(page_url, headers=headers, timeout=8)
         resp.raise_for_status()
-    except requests.RequestException:
+    except requests.RequestException as e:
+        print(f"Request failed: {e}")
         return []
     soup = BeautifulSoup(resp.text, "html.parser")
     links = set()
@@ -33,16 +29,15 @@ def fetch_image_links(page_url: str) -> list[str]:
             or img.get("data-original")
             or img.get("data-lazy")
         )
-        if src:
-            abs_url = urljoin(page_url, src)
-            if is_valid(abs_url) and abs_url.startswith(PREFIX):
-                links.add(abs_url)
+        # Only add if src is an absolute Capital IQ image URL
+        if src and src.startswith(CAPITALIQ_PREFIX):
+            links.add(src)
     return sorted(links)
 
 @app.route("/fetch-images", methods=["POST"])
 def fetch_images():
     data = request.get_json(force=True)
     url = (data.get("url") or "").strip()
-    if not is_valid(url):
+    if not url.startswith("http"):
         return jsonify(error="Invalid URL"), 400
-    return jsonify(images=fetch_image_links(url))
+    return jsonify(images=fetch_capitaliq_images(url))
