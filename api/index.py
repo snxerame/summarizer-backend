@@ -5,7 +5,7 @@ from urllib.parse import urljoin, urlparse
 
 app = Flask(__name__)
 
-PREFIX = "https://www.capitaliq.spglobal.com/Articles/"
+PREFIX = ""
 
 def is_valid(url: str) -> bool:
     p = urlparse(url)
