@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "api/fetch-html.js": {
+      "memory": 3008,
+      "maxDuration": 60
+    }
+  }
+}
