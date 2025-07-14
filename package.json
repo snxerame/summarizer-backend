@@ -1,4 +1,15 @@
 {
+  "name": "vercel-fetch-html-api",
+  "version": "1.0.0",
+  "description": "A Vercel serverless API to fetch HTML from a website using Puppeteer.",
+  "main": "api/fetch-html.js",
+  "scripts": {
+    "dev": "vercel dev",
+    "start": "vercel dev"
+  },
+  "engines": {
+    "node": "20.x"
+  },
   "dependencies": {
     "puppeteer-core": "^21.3.8",
     "chrome-aws-lambda": "^10.1.0"
